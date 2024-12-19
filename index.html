@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            font-family: 'Roboto', Arial, sans-serif;
+            background-color: #20232a;
+            color: #61dafb;
+            text-align: center;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 2em;
+            text-shadow: 0px 0px 10px #21a1f1;
+        }
+
+        textarea {
+            width: 90%;
+            max-width: 600px;
+            height: 150px;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #61dafb;
+            background-color: #282c34;
+            color: #ffffff;
+            border-radius: 8px;
+            display: block;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            background-color: #61dafb;
+            color: #282c34;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+
+        button:hover {
+            background-color: #21a1f1;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .output {
+            margin-top: 20px;
+            text-align: left;
+            width: 90%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            background-color: #282c34;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        pre {
+            background-color: #20232a;
+            color: #61dafb;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>ASCII加密</h1>
+    <textarea id="inputBox" placeholder="输入文本"></textarea>
+    <textarea id="outputBox" readonly placeholder="输出内容将绕过ASCII检测机制"></textarea><br>
+    <button onclick="convertText()">加密</button>
+    <button onclick="copyToClipboard()">粘贴至剪贴板</button>
+    <div class="output">
+        <h3>Debug列表</h3>
+        <pre id="asciiCodes"></pre>
+    </div>
+
+    <script>
+        const asciiList = {
+            "1": ["\uff11"],
+            "2": ["\ud835\udfe4"],
+            "5": ["\u04e0"],
+            "7": ["\uff17"],
+            "8": ["\ud835\udfea"],
+            "a": ["\u0391", "\u0410", "\u13aa"],
+            "b": ["\u0392", "\u0412", "\u13f4"],
+            "c": ["\u03f9", "\u0421", "\u13df"],
+            "d": ["\u13a0", "\u15de", "\ua4d3"],
+            "e": ["\u0395", "\u0415", "\u13ac"],
+            "f": ["\u03dc", "\u15b4", "\ua4dd"],
+            "g": ["\u050c", "\u13c0", "\ua4d6"],
+            "h": ["\u0397", "\u041d", "\u13bb"],
+            "i": ["\u0406", "\u04c0", "\u04cf"],
+            "j": ["\u13ab", "\u148d", "\ua4d9"],
+            "k": ["\u039a", "\u041a", "\u13e6"],
+            "l": ["\u13de", "\u14aa", "\ud801\udc1b"],
+            "m": ["\u039c", "\u03fa", "\u041c"],
+            "n": ["\u2c9a", "\ua4e0", "\u039d"],
+            "o": ["\u039f", "\u041e"],
+            "p": ["\u03a1", "\u0420", "\u13e2"],
+            "q": ["\uff31"],
+            "r": ["\uff32", "\u01a6"],
+            "s": ["\u0405", "\u054f", "\ua4e2"],
+            "t": ["\u2ca6", "\ua4d4", "\u03a4"],
+            "u": ["\u054d", "\u1200", "\ua4f4"],
+            "v": ["\u13d9", "\u2d38", "\ua4e6"],
+            "w": ["\u051c", "\u13b3", "\ua4ea"],
+            "x": ["\u03a7", "\u0425", "\u166d"],
+            "y": ["\u03a5", "\u2ca8", "\ua4ec"],
+            "z": ["\u0396", "\u13c3", "\ua4dc"]
+        };
+
+        function convertText() {
+            const input = document.getElementById("inputBox").value;
+            let convertedText = "";
+            let asciiUsed = {};
+
+            for (let char of input) {
+                const lowerChar = char.toLowerCase();
+                if (asciiList[lowerChar]) {
+                    const alternatives = asciiList[lowerChar];
+                    const randomChar = alternatives[Math.floor(Math.random() * alternatives.length)];
+                    convertedText += randomChar;
+
+                    if (!asciiUsed[lowerChar]) asciiUsed[lowerChar] = [];
+                    asciiUsed[lowerChar].push(randomChar);
+                } else {
+                    convertedText += char;
+                }
+            }
+            document.getElementById("outputBox").value = convertedText;
+            document.getElementById("asciiCodes").textContent = JSON.stringify(asciiUsed, null, 4);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById("outputBox");
+            navigator.clipboard.writeText(output.value).then(() => {
+                alert("内容已复制到剪贴板！");
+            }).catch(err => {
+                alert("复制失败，请重试！");
+            });
+        }
+    </script>
+</body>
+
+</html>
